@@ -4,6 +4,7 @@
 	"description": "yotube api application made by dxxbletriiiple and khozhabek",
 	"main": "index.js",
 	"scripts": {
+		"gulp": "gulp",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"tail": "tailwindcss -i ./src/assets/style.css -o ./dist/assets/style.css --watch",
 		"gulp": "gulp"
