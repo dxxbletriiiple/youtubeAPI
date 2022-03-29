@@ -1,0 +1,24 @@
+{
+  "name": "youtubeapi",
+  "version": "1.0.0",
+  "description": "yotube api application made by dxxbletriiiple and khozhabek",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Khozhabek/youtubeAPI.git"
+  },
+  "keywords": [
+    "youtube",
+    "api",
+    "youtubeAPI"
+  ],
+  "author": "dxxbletriiiple, khozhabek",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Khozhabek/youtubeAPI/issues"
+  },
+  "homepage": "https://github.com/Khozhabek/youtubeAPI#readme"
+}
