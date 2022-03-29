@@ -1,24 +1,38 @@
 {
-  "name": "youtubeapi",
-  "version": "1.0.0",
-  "description": "yotube api application made by dxxbletriiiple and khozhabek",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Khozhabek/youtubeAPI.git"
-  },
-  "keywords": [
-    "youtube",
-    "api",
-    "youtubeAPI"
-  ],
-  "author": "dxxbletriiiple, khozhabek",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Khozhabek/youtubeAPI/issues"
-  },
-  "homepage": "https://github.com/Khozhabek/youtubeAPI#readme"
+	"name": "youtubeapi",
+	"version": "1.0.0",
+	"description": "yotube api application made by dxxbletriiiple and khozhabek",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"tail": "tailwindcss -i ./src/assets/style.css -o ./dist/assets/style.css --watch"
+	},
+	"devDependencies": {
+		"browser-sync": "^2.27.9",
+		"gulp": "^4.0.2",
+		"gulp-autoprefixer": "^8.0.0",
+		"gulp-clean-css": "^4.3.0",
+		"gulp-cli": "^2.3.0",
+		"gulp-rename": "^2.0.0",
+		"gulp-sass": "^5.1.0",
+		"tailwindcss": "^3.0.23"
+	},
+	"dependencies": {
+		"sass": "^1.42.1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Khozhabek/youtubeAPI.git"
+	},
+	"keywords": [
+		"youtube",
+		"api",
+		"youtubeAPI"
+	],
+	"author": "dxxbletriiiple, khozhabek",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Khozhabek/youtubeAPI/issues"
+	},
+	"homepage": "https://github.com/Khozhabek/youtubeAPI#readme"
 }
