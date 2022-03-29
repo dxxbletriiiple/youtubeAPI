@@ -8,14 +8,14 @@ const cleanCSS = require('gulp-clean-css');
 gulp.task('server', function () {
 	browserSync.init({
 		server: {
-			baseDir: './',
+			baseDir: 'src/',
 		},
 	});
 });
 
 gulp.task('styles', function () {
 	return gulp
-		.src('src/sass/**/*.+(sass|scss)')
+		.src('src/*.+(sass|scss)')
 		.pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
 		.pipe(
 			rename({
@@ -30,13 +30,14 @@ gulp.task('styles', function () {
 			}),
 		)
 		.pipe(cleanCSS({ compatibility: 'ie8' }))
-		.pipe(gulp.dest('src/css'))
+		.pipe(gulp.dest('dist/css'))
 		.pipe(browserSync.stream());
 });
 
 gulp.task('watch', function () {
 	gulp.watch('src/sass/**/*.+(scss|sass)', gulp.parallel('styles'));
 	gulp.watch('src/*.html').on('change', browserSync.reload);
+	gulp.watch('src/assets/*.js').on('change', browserSync.reload);
 });
 
 gulp.task('default', gulp.parallel('watch', 'server', 'styles'));

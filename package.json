@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"tail": "tailwindcss -i ./src/assets/style.css -o ./dist/assets/style.css --watch"
+		"tail": "tailwindcss -i ./src/assets/style.css -o ./dist/assets/style.css --watch",
+		"gulp": "gulp"
 	},
 	"devDependencies": {
 		"browser-sync": "^2.27.9",
@@ -29,7 +30,10 @@
 		"api",
 		"youtubeAPI"
 	],
-	"author": "dxxbletriiiple, khozhabek",
+	"author": [
+		"dxxbletriiiple",
+		"khozhabek"
+	],
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/Khozhabek/youtubeAPI/issues"
