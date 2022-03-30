@@ -1,10 +1,19 @@
 ('use strict');
 
 document.addEventListener('DOMContentLoaded', () => {
-	const API_key = 'AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw';
-	const input = document.querySelector('input'),
+	const API_key = 'AIzaSyCKP-39Vp2A_GOTOqcHnN8x57-CApqEYkA';
+	const input = document.querySelector('.search_input'),
 		button = document.querySelector('.search_button'),
-		videos = document.querySelector('.search__videos');
+		videos = document.querySelector('.search__videos'),
+		suggestion = document.querySelectorAll('.suggestions_btn');
+
+	suggestion.forEach((item) => {
+		item.addEventListener('click', () => {
+			input.value = item.innerHTML;
+			console.log('inp', input.value);
+			console.log(item.innerHTML);
+		});
+	});
 
 	button.addEventListener('click', (e) => {
 		const url = 'https://www.googleapis.com/youtube/v3/search?key=';

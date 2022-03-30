@@ -13,7 +13,9 @@ module.exports = {
 				480: '480px',
 			},
 			height: {
+				26: '26px',
 				27: '27px',
+				50: '50px',
 			},
 			colors: {
 				cc: '#ccc',
