@@ -6,11 +6,11 @@
 	"scripts": {
 		"gulp": "gulp",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"tail": "tailwindcss -i ./src/assets/style.css -o ./dist/assets/style.css --watch",
-		"gulp": "gulp"
+		"tail": "tailwindcss -i ./src/assets/style.css -o ./dist/assets/style.css --watch"
 	},
 	"devDependencies": {
 		"browser-sync": "^2.27.9",
+		"dotenv": "^16.0.0",
 		"gulp": "^4.0.2",
 		"gulp-autoprefixer": "^8.0.0",
 		"gulp-clean-css": "^4.3.0",
@@ -20,6 +20,8 @@
 		"tailwindcss": "^3.0.23"
 	},
 	"dependencies": {
+		"dotenv": "^16.0.0",
+		"requirejs": "^2.3.6",
 		"sass": "^1.42.1"
 	},
 	"repository": {
