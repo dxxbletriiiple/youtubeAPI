@@ -1,7 +1,8 @@
-('use strict');
+'use strict';
 
 document.addEventListener('DOMContentLoaded', () => {
-	const API_key = 'AIzaSyCKP-39Vp2A_GOTOqcHnN8x57-CApqEYkA';
+	const url = 'https://www.googleapis.com/youtube/v3/search?key=';
+	const API_key = 'AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw';
 	const input = document.querySelector('.search_input'),
 		button = document.querySelector('.search_button'),
 		videos = document.querySelector('.search__videos'),
@@ -10,15 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	suggestion.forEach((item) => {
 		item.addEventListener('click', () => {
 			input.value = item.innerHTML;
-			console.log('inp', input.value);
-			console.log(item.innerHTML);
+			getData(item.innerHTML);
 		});
 	});
 
 	button.addEventListener('click', (e) => {
-		const url = 'https://www.googleapis.com/youtube/v3/search?key=';
 		e.preventDefault();
-		fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + input.value)
+		getData(input.value);
+	});
+
+	function getData(q) {
+		fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q)
 			.then((req) => req.json())
 			.then((req) => {
 				console.log(req);
@@ -34,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				});
 			})
 			.catch((req) => console.log(req));
-	});
+	}
 
 	class appendVideos {
 		constructor(title, author, date, views, vidID) {
@@ -43,12 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.date = new Date(date).toLocaleDateString();
 			this.vidID = vidID;
 			this.views = views;
-			this.parent = document.querySelector('.search__videos');
+			this.parent = document.querySelector('.video_block');
 		}
 		render() {
 			const elem = document.createElement('div');
-			elem.innerHTML = `<iframe width="420" height="315" src="http://www.youtube.com/embed/${this.vidID}" frameborder="0" allowfullscreen></iframe>`;
-
+			elem.innerHTML = `
+				<iframe class="w-290 h-162" src="http://www.youtube.com/embed/${this.vidID}" frameborder="0" allowfullscreen></iframe>
+				<div class="video-text w-290 h-72 mt-2.5 ml-42">
+						<div class="video_title font-sans text-13 font-bold">${this.title}</div>
+						<div class="video_author text-xs text-72 mt-1.5">${this.author}</div>
+						<span class="views text-xs text-72">${this.views}</span>
+						<span class="video_date text-xs text-72">• ${this.date}</span>
+				</div>
+				`;
 			this.parent.append(elem);
 		}
 	}
@@ -96,3 +106,35 @@ document.addEventListener('DOMContentLoaded', () => {
 3. Эстетика
 
 } */
+
+const hamburger = document.querySelector('.hamburger');
+const sideBar = document.querySelector('aside');
+
+hamburger.addEventListener('click', () => {
+	sideBar.classList.toggle('left-0');
+	sideBar.classList.toggle('left-x');
+});
+
+const targetEl = document.getElementById('tooltipContent');
+
+// set the element that trigger the tooltip using hover or click
+const triggerEl = document.getElementById('tooltipButton');
+
+// options with default values
+const options = {
+	placement: 'bottom',
+	triggerType: 'hover',
+	onHide: () => {
+		console.log('tooltip is shown');
+	},
+	onShow: () => {
+		console.log('tooltip is hidden');
+	},
+};
+
+const tooltip = new Tooltip(targetEl, triggerEl, options);
+
+tooltip.show();
+
+// hide the tooltip
+tooltip.hide();
