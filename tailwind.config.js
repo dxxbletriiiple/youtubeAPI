@@ -1,5 +1,5 @@
 module.exports = {
-	content: ['./src/**/*.{html,js}'],
+	content: ['./lite/**/*.{html,js}'],
 	darkMode: true,
 	theme: {
 		extend: {
@@ -46,5 +46,4 @@ module.exports = {
 			sans: ['Roboto', 'Arial'],
 		},
 	},
-	plugins: [],
 };

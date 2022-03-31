@@ -5,32 +5,43 @@ document.addEventListener('DOMContentLoaded', () => {
 	const API_key = 'AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw';
 	const input = document.querySelector('.search_input'),
 		button = document.querySelector('.search_button'),
-		videos = document.querySelector('.search__videos'),
 		suggestion = document.querySelectorAll('.suggestions_btn');
-
-	suggestion.forEach((item) => {
-		item.addEventListener('click', () => {
-			input.value = item.innerHTML;
-			getData(item.innerHTML);
-		});
-	});
 
 	button.addEventListener('click', (e) => {
 		e.preventDefault();
 		getData(input.value);
 	});
 
+	suggestion.forEach((item) => {
+		item.addEventListener('click', (e) => {
+			// ! need to do classlist
+			item.classList.add('active-dark');
+			if (!e.target.classList.contains('active_dark')) {
+				suggestion.forEach((i) => i.classList.remove('acive-dark'));
+			}
+			// ! need to fix
+			document.querySelector('.video_block').innerHTML = '';
+			getData(item.innerHTML);
+		});
+	});
 	function getData(q) {
 		fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q)
 			.then((req) => req.json())
 			.then((req) => {
+				/* let x = fetch(
+					`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${x}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
+				)
+					.then((r) => r.json())
+					.then((r) => r.items[0].statistics.viewCount);
+				*/
+				console.log(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q);
 				console.log(req);
 				req.items.forEach((vid) => {
 					const video = new appendVideos(
 						vid.snippet.title,
 						vid.snippet.channelTitle,
 						vid.snippet.publishTime,
-						50,
+						0,
 						vid.id.videoId,
 					);
 					video.render();
@@ -39,6 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			.catch((req) => console.log(req));
 	}
 
+	function getViews(id) {
+		return fetch(
+			`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${id}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
+		)
+			.then((r) => r.json())
+			.then((r) => r.items[0].statistics.viewCount);
+	}
 	class appendVideos {
 		constructor(title, author, date, views, vidID) {
 			this.title = title;
@@ -50,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		render() {
 			const elem = document.createElement('div');
+			if (this.parent.innerHTML != '') this.parent.innerHTML = '';
 			elem.innerHTML = `
 				<iframe class="w-290 h-162" src="http://www.youtube.com/embed/${this.vidID}" frameborder="0" allowfullscreen></iframe>
 				<div class="video-text w-290 h-72 mt-2.5 ml-42">
@@ -109,13 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const hamburger = document.querySelector('.hamburger');
 const sideBar = document.querySelector('aside');
+const container = document.querySelector('.container');
 
 hamburger.addEventListener('click', () => {
 	sideBar.classList.toggle('left-0');
 	sideBar.classList.toggle('left-x');
 });
 
-const targetEl = document.getElementById('tooltipContent');
+/* const targetEl = document.getElementById('tooltip-dark');
 
 // set the element that trigger the tooltip using hover or click
 const triggerEl = document.getElementById('tooltipButton');
@@ -138,3 +158,4 @@ tooltip.show();
 
 // hide the tooltip
 tooltip.hide();
+ */
