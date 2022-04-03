@@ -2,3 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.active-dark {
+	background: #030303;
+	color: #ffffff;
+}
+
+.active-light {
+	color: #000;
+	background: #fff;
+}
+.suggestions::-webkit-scrollbar {
+	display: none;
+}
