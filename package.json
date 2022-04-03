@@ -21,6 +21,7 @@
 	},
 	"dependencies": {
 		"dotenv": "^16.0.0",
+		"flowbite": "^1.4.1",
 		"requirejs": "^2.3.6",
 		"sass": "^1.42.1"
 	},
