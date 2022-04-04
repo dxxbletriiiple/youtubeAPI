@@ -1,6 +1,6 @@
 module.exports = {
 	content: ['./src/**/*.{html,js}'],
-	darkMode: true,
+	darkMode: 'class',
 	theme: {
 		extend: {
 			width: {
@@ -23,11 +23,14 @@ module.exports = {
 				162: '162px',
 			},
 			colors: {
-				cc: '#ccc',
-				f8: '#f8f8f8',
+				18: '#181818',
+				30: '#303030',
 				72: '#727272',
 				63: '#636363',
+				'1a': '#ffffff1a',
+				cc: '#ccc',
 				d9: '#d9d9d9',
+				f8: '#f8f8f8',
 			},
 			fontSize: {
 				13: ['13px', '18px'],

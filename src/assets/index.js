@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	button.addEventListener('click', (e) => {
 		e.preventDefault();
 		getData(input.value);
+		// getData(input.value);
 	});
 
 	suggestion.forEach((item) => {
@@ -24,40 +25,99 @@ document.addEventListener('DOMContentLoaded', () => {
 			getData(item.innerHTML);
 		});
 	});
-	function getData(q) {
-		fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q)
+	let vidID = [];
+	let searchData;
+	async function getData(q) {
+		searchData = await fetch(
+			url + API_key + '&type=video&part=snippet&max_results=10&q=' + q,
+		).then((res) => res.json());
+
+		async function pushID(rs) {
+			rs.items.forEach((item) => vidID.push(item.id.videoId));
+		}
+		await pushID(searchData);
+		console.log('data', searchData);
+		console.log('id', vidID);
+		await getVideoViews(vidID);
+	}
+	const videosViews = {};
+
+	async function getVideoViews(id) {
+		id.forEach(async (item) => {
+			const views = fetch(
+				`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${item}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
+			)
+				.then((resp) => resp.json())
+				.then((resp) => +resp.items[0].statistics.viewCount);
+			videosViews[item] = await views;
+		});
+		console.log(videosViews);
+	}
+	// title, author, date, views, vidID
+	const videoData = {
+		videoID: 'aasdasd',
+		title: 'title',
+		author: 'lol',
+		views: 50,
+		date: '20.05.2000',
+		channelLogo: 'logo',
+	};
+
+	async function sortVideo(vid) {
+		for (let key in vid) {
+		}
+	}
+	/* async function GetData(q) {
+		console.log('fetching');
+		const data = async () =>
+			fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q);
+		data();
+		const id = await data.json().items;
+		console.log(id);
+		const statistics = await fetch(
+			`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${id}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
+		);
+		statistics.json();
+
+		console.log('stat', statistics);
+	} */
+
+	/* function getData(q) {
+		let videoID = [];
+		let data = fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q)
 			.then((req) => req.json())
 			.then((req) => {
-				/* let x = fetch(
-					`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${x}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
+				console.log('req', req);
+				req.items.forEach((item) => videoID.push(item.id.videoID));
+				console.log('vidid', videoID);
+				return req;
+
+				let statistics = fetch(
+					`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=NKtdfmpyfVY&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
 				)
 					.then((r) => r.json())
 					.then((r) => r.items[0].statistics.viewCount);
-				*/
-				console.log(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q);
-				console.log(req);
-				req.items.forEach((vid) => {
-					const video = new appendVideos(
+
+				console.log(
+					'url',
+					url + API_key + '&type=video&part=snippet&max_results=10&q=' + q,
+				);
+				data.items.forEach((vid) => {
+					let video = new AppendVideos(
 						vid.snippet.title,
 						vid.snippet.channelTitle,
 						vid.snippet.publishTime,
-						0,
+						statistics,
 						vid.id.videoId,
 					);
+					console.log('vid', vid);
 					video.render();
 				});
 			})
 			.catch((req) => console.log(req));
-	}
+	}*/
 
-	function getViews(id) {
-		return fetch(
-			`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${id}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
-		)
-			.then((r) => r.json())
-			.then((r) => r.items[0].statistics.viewCount);
-	}
-	class appendVideos {
+	class AppendVideos {
 		constructor(title, author, date, views, vidID) {
 			this.title = title;
 			this.author = author;
@@ -68,22 +128,28 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		render() {
 			const elem = document.createElement('div');
-			if (this.parent.innerHTML != '') this.parent.innerHTML = '';
+			// if (this.parent.innerHTML != '') this.parent.innerHTML = '';
 			elem.innerHTML = `
+			<div class="mr-3">
 				<iframe class="w-290 h-162" src="http://www.youtube.com/embed/${this.vidID}" frameborder="0" allowfullscreen></iframe>
-				<div class="video-text w-290 h-72 mt-2.5 ml-42">
+				<div class="flex mt-2.5 w-290 h-72">
+					<img class="video_logo w-8 h-8 rounded-full" src="https://yt3.ggpht.com/wblvtoHFXpBoat-oNukycB5auBa45inSwiyghE8gac3MN_ridYgeY1kHRKCkBrb1slgpIlO6Vw=s68-c-k-c0x00ffffff-no-rj" alt="${this.title}"/>
+					<div class="video-text ml-3">
 						<div class="video_title font-sans text-13 font-bold">${this.title}</div>
-						<div class="video_author text-xs text-72 mt-1.5">${this.author}</div>
-						<span class="views text-xs text-72">${this.views}</span>
-						<span class="video_date text-xs text-72">• ${this.date}</span>
+						<div class="video_author text-xs text-72">${this.author}</div>
+						<div class="vide_info flex">
+							<span class="views text-xs text-72">${this.views}&nbsp;</span>
+							<span class="video_date text-xs text-72">•&nbsp${this.date}</span>
+						</div>
+					</div>
 				</div>
-				`;
+			</div>`;
 			this.parent.append(elem);
 		}
 	}
 
 	//change color-theme
-	if (
+	/* if (
 		localStorage.theme === 'dark' ||
 		(!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
 	) {
@@ -99,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	localStorage.theme = 'dark';
 
 	// Whenever the user explicitly chooses to respect the OS preference
-	localStorage.removeItem('theme');
+	localStorage.removeItem('theme'); */
 });
 
 /* {
@@ -159,3 +225,13 @@ tooltip.show();
 // hide the tooltip
 tooltip.hide();
  */
+
+// channel logo src https://yt3.ggpht.com/ytc/AKedOLTHZuOu1RwxGkcEsHKE6_WfmeST3JPoWNLxir3alA=s68-c-k-c0x00ffffff-no-rj
+// channel url https://www.youtube.com/channel/UC7wXt18f2iA3EDXeqAVuKng?feature=emb_ch_name_ex
+
+//etag "z5KdTdZudGJGI-FyiRUjODimbD0"
+
+// vid-id "hoIl8NZYyFs"
+//snippet -channel-id "UC7wXt18f2iA3EDXeqAVuKng"
+
+// https://yt3.ggpht.com/ytc/AKedOLQshPLMIaytOn07OTGO8KgyVFZPVf_RFG0JaEk-TA=s88-c-k-c0x00ffffff-no-rj
