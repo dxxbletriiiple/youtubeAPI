@@ -14,3 +14,15 @@
 .suggestions::-webkit-scrollbar {
 	display: none;
 }
+
+html::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+	background: none;
+	width: 10px;
+	padding: 3px 3px;
+}
+html::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb {
+	border-radius: 20px;
+	background: #717171;
+}
