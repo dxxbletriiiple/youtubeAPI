@@ -3,10 +3,17 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const url = 'https://www.googleapis.com/youtube/v3/search?key=';
 	const API_key = 'AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw';
-	const input = document.querySelector('.search_input'),
-		button = document.querySelector('.search_button'),
-		suggestion = document.querySelectorAll('.suggestions_btn');
+	const input = document.querySelector('.search_input');
+	const button = document.querySelector('.search_button');
+	const suggestion = document.querySelectorAll('.suggestions_btn');
+	const hamburger = document.querySelector('.hamburger');
+	const sideBar = document.querySelector('aside');
+	const container = document.querySelector('.container');
 
+	hamburger.addEventListener('click', () => {
+		sideBar.classList.toggle('left-0');
+		sideBar.classList.toggle('left-x');
+	});
 	button.addEventListener('click', (e) => {
 		e.preventDefault();
 		getData(input.value);
@@ -20,69 +27,108 @@ document.addEventListener('DOMContentLoaded', () => {
 				suggestion.forEach((i) => i.classList.remove('acive-dark'));
 			}
 			// ! need to fix
-			document.querySelector('.video_block').innerHTML = '';
+			// document.querySelector('.video_block').innerHTML = '';
 			getData(item.innerHTML);
 		});
 	});
-	function getData(q) {
-		fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q)
-			.then((req) => req.json())
-			.then((req) => {
-				/* let x = fetch(
-					`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${x}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
-				)
-					.then((r) => r.json())
-					.then((r) => r.items[0].statistics.viewCount);
-				*/
-				console.log(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q);
-				console.log(req);
-				req.items.forEach((vid) => {
-					const video = new appendVideos(
-						vid.snippet.title,
-						vid.snippet.channelTitle,
-						vid.snippet.publishTime,
-						0,
-						vid.id.videoId,
-					);
-					video.render();
-				});
-			})
-			.catch((req) => console.log(req));
-	}
 
-	function getViews(id) {
-		return fetch(
-			`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${id}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,
-		)
-			.then((r) => r.json())
-			.then((r) => r.items[0].statistics.viewCount);
+	const videoData = [];
+	// prettier-ignore
+	async function getData(q) {
+		let searchData = await fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q,)
+			.then((res) => res.json());
+
+		async function pushID(rs) {
+			await rs.items.forEach((item) =>
+				videoData.push({
+					videoID: item.id.videoId,
+					channelID: item.snippet.channelId,
+					author: item.snippet.channelTitle,
+					title: item.snippet.title,
+					date: new Date(item.snippet.publishedAt).toDateString(),
+				}),
+			);
+			console.log('pushid', videoData);
+		}
+		async function getVideoViews(id) {
+			await id.forEach(async (item) => {
+				await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${item.videoID}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,)
+					.then((resp) => resp.json())
+					.then((resp) => item.views = resp.items[0].statistics.viewCount);
+				});
+			console.log('getviews', videoData);
+			await renderVideos(videoData);
+		}
+		async function getChannelLogo(id) {
+			await id.forEach((item) => {
+				fetch(`https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${item.channelID}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`)
+					.then((resp) => resp.json())
+					.then((resp) => item.channelLogo = resp.items[0].snippet.thumbnails.default.url);
+			});
+			console.log('channellogo', videoData);
+		}
+		async function renderVideos(arr) {
+			let newArr = await arr;
+			console.log('rendervid', newArr);
+			await newArr.forEach((item) => {
+				const render = new AppendVideos(item);
+				render.render();
+			});
+		}
+		await pushID(searchData);
+		await getVideoViews(videoData);
+		await getChannelLogo(videoData);
 	}
-	class appendVideos {
-		constructor(title, author, date, views, vidID) {
-			this.title = title;
-			this.author = author;
-			this.date = new Date(date).toLocaleDateString();
-			this.vidID = vidID;
-			this.views = views;
+	/*
+	async function sortVideo(vid) {
+		for (let key in vid) {
+		}
+	} */
+
+	class AppendVideos {
+		constructor(obj) {
+			this.author = obj.author;
+			this.logo = obj.channelLogo;
+			this.date = obj.date;
+			this.title = obj.title;
+			this.vidID = obj.vidID;
+			this.views = obj.views;
 			this.parent = document.querySelector('.video_block');
 		}
 		render() {
 			const elem = document.createElement('div');
-			if (this.parent.innerHTML != '') this.parent.innerHTML = '';
+			// if (this.parent.innerHTML != '') this.parent.innerHTML = '';
 			elem.innerHTML = `
+			<div class="mr-3 mb-3">
 				<iframe class="w-290 h-162" src="http://www.youtube.com/embed/${this.vidID}" frameborder="0" allowfullscreen></iframe>
-				<div class="video-text w-290 h-72 mt-2.5 ml-42">
-						<div class="video_title font-sans text-13 font-bold">${this.title}</div>
-						<div class="video_author text-xs text-72 mt-1.5">${this.author}</div>
-						<span class="views text-xs text-72">${this.views}</span>
-						<span class="video_date text-xs text-72">• ${this.date}</span>
+				<div class="flex mt-2.5 w-290 h-72">
+					<img class="video_logo w-8 h-8 rounded-full" src=${this.logo} alt="${this.author}"/>
+					<div class="video-text ml-3">
+						<div class="video_title font-sans text-13 font-bold dark:text-white">${this.title}</div>
+						<div class="video_author text-xs text-72 dark:text-white">${this.author}</div>
+						<div class="vide_info flex">
+							<span class="views text-xs text-72 dark:text-white">${this.views}&nbsp;</span>
+							<span class="video_date text-xs text-72 dark:text-white">•&nbsp;${this.date}</span>
+						</div>
+					</div>
 				</div>
-				`;
+			</div>`;
 			this.parent.append(elem);
 		}
 	}
 
-	//change color-theme
+	localStorage.setItem('theme', 'dark');
+
+	/* 	const changeTheme = document.querySelector('.theme');
+	changeTheme.addEventListener('click', (e) => {
+		e.preventDefault();
+	});
+	function setTheme(theme) {
+		if ()
+	}
+	function getSavedTheme() {
+		return localStorage.getItem('theme');
+	}
 	if (
 		localStorage.theme === 'dark' ||
 		(!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -90,16 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.documentElement.classList.add('dark');
 	} else {
 		document.documentElement.classList.remove('dark');
-	}
-
-	// Whenever the user explicitly chooses light mode
-	localStorage.theme = 'light';
-
-	// Whenever the user explicitly chooses dark mode
-	localStorage.theme = 'dark';
-
-	// Whenever the user explicitly chooses to respect the OS preference
-	localStorage.removeItem('theme');
+	} */
 });
 
 /* {
@@ -125,37 +162,3 @@ document.addEventListener('DOMContentLoaded', () => {
 3. Эстетика
 
 } */
-
-const hamburger = document.querySelector('.hamburger');
-const sideBar = document.querySelector('aside');
-const container = document.querySelector('.container');
-
-hamburger.addEventListener('click', () => {
-	sideBar.classList.toggle('left-0');
-	sideBar.classList.toggle('left-x');
-});
-
-/* const targetEl = document.getElementById('tooltip-dark');
-
-// set the element that trigger the tooltip using hover or click
-const triggerEl = document.getElementById('tooltipButton');
-
-// options with default values
-const options = {
-	placement: 'bottom',
-	triggerType: 'hover',
-	onHide: () => {
-		console.log('tooltip is shown');
-	},
-	onShow: () => {
-		console.log('tooltip is hidden');
-	},
-};
-
-const tooltip = new Tooltip(targetEl, triggerEl, options);
-
-tooltip.show();
-
-// hide the tooltip
-tooltip.hide();
- */
