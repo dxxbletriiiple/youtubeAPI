@@ -15,3 +15,13 @@
  youtube.com/watch?UC7wXt18f2iA3EDXeqAVuKng/hoIl8NZYyFs
 
 */
+
+// channel logo src https://yt3.ggpht.com/ytc/AKedOLTHZuOu1RwxGkcEsHKE6_WfmeST3JPoWNLxir3alA=s68-c-k-c0x00ffffff-no-rj
+// channel url https://www.youtube.com/channel/UC7wXt18f2iA3EDXeqAVuKng?feature=emb_ch_name_ex
+
+//etag "z5KdTdZudGJGI-FyiRUjODimbD0"
+
+// vid-id "hoIl8NZYyFs"
+//snippet -channel-id "UC7wXt18f2iA3EDXeqAVuKng"
+
+// https://yt3.ggpht.com/ytc/AKedOLQshPLMIaytOn07OTGO8KgyVFZPVf_RFG0JaEk-TA=s88-c-k-c0x00ffffff-no-rj
