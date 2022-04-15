@@ -9,6 +9,7 @@ module.exports = {
 				11: '11px',
 				13: '54px',
 				27: '27px',
+				68: '68px',
 				152: '152px',
 				185: '185px',
 				224: '224px',
@@ -21,6 +22,7 @@ module.exports = {
 				50: '50px',
 				72: '72px',
 				162: '162px',
+				244: '244px',
 			},
 			colors: {
 				18: '#181818',
@@ -30,6 +32,7 @@ module.exports = {
 				63: '#636363',
 				90: '#909090',
 				'1a': '#ffffff1a',
+				rr: '#ff0000',
 				cc: '#ccc',
 				d9: '#d9d9d9',
 				f8: '#f8f8f8',
@@ -49,6 +52,12 @@ module.exports = {
 		},
 		fontFamily: {
 			sans: ['Roboto', 'Arial'],
+		},
+		borderWidth: {
+			9: '9px',
+			10: '10px',
+			l18: '18px',
+			20: '20px',
 		},
 	},
 };

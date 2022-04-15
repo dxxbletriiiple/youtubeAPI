@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	const sideBar = document.querySelector('aside');
 	const container = document.querySelector('.container');
 
+	document.addEventListener('keydown', (e) => {
+		if (e.code == 'Slash') input.focus();
+	});
+
 	hamburger.addEventListener('click', () => {
 		sideBar.classList.toggle('left-0');
 		sideBar.classList.toggle('left-x');
@@ -18,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		e.preventDefault();
 		getData(input.value);
 	});
-
+	let fetchdata;
 	suggestion.forEach((item) => {
 		item.addEventListener('click', (e) => {
 			// ! need to do classlist
@@ -28,63 +32,71 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 			// ! need to fix
 			// document.querySelector('.video_block').innerHTML = '';
-			getData(item.innerHTML);
+			fetchdata = getData(item.innerHTML);
 		});
 	});
 
 	const videoData = [];
-	// prettier-ignore
 	async function getData(q) {
-		let searchData = await fetch(url + API_key + '&type=video&part=snippet&max_results=10&q=' + q,)
-			.then((res) => res.json());
-
-		async function pushID(rs) {
-			await rs.items.forEach((item) =>
-				videoData.push({
-					videoID: item.id.videoId,
-					channelID: item.snippet.channelId,
-					author: item.snippet.channelTitle,
-					title: item.snippet.title,
-					date: new Date(item.snippet.publishedAt).toDateString(),
-				}),
-			);
-			console.log('pushid', videoData);
-		}
-		async function getVideoViews(id) {
-			await id.forEach(async (item) => {
-				await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${item.videoID}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`,)
-					.then((resp) => resp.json())
-					.then((resp) => item.views = resp.items[0].statistics.viewCount);
-				});
-			console.log('getviews', videoData);
-			await renderVideos(videoData);
-		}
-		async function getChannelLogo(id) {
-			await id.forEach((item) => {
-				fetch(`https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${item.channelID}&key=AIzaSyBRTWf2kiejB4w0SHCakDVutVGnKb8Bjnw`)
-					.then((resp) => resp.json())
-					.then((resp) => item.channelLogo = resp.items[0].snippet.thumbnails.default.url);
+		return fetch(
+			url + API_key + '&type=video&part=snippet&max_results=10&order=viewCount&q=' + q,
+		)
+			.then((res) => res.json())
+			.then((res) => pushID(res))
+			.then((statid) => {
+				getVideoViews(statid[0]);
+				getChannelLogo(statid[1]);
+			})
+			.then((obj) => {
+				console.log(videoData);
+				renderData(obj);
 			});
-			console.log('channellogo', videoData);
-		}
-		async function renderVideos(arr) {
-			let newArr = await arr;
-			console.log('rendervid', newArr);
-			await newArr.forEach((item) => {
-				const render = new AppendVideos(item);
-				render.render();
-			});
-		}
-		await pushID(searchData);
-		await getVideoViews(videoData);
-		await getChannelLogo(videoData);
 	}
-	/*
-	async function sortVideo(vid) {
-		for (let key in vid) {
-		}
-	} */
 
+	function pushID(rs) {
+		let statId = '';
+		let channelStat = '';
+		rs.items.forEach((item) => {
+			videoData.push({
+				videoID: item.id.videoId,
+				channelID: item.snippet.channelId,
+				author: item.snippet.channelTitle,
+				title: item.snippet.title,
+				date: new Date(item.snippet.publishedAt).toDateString(),
+				thumbnail: `https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`,
+			});
+			statId += '&id=' + item.id.videoId;
+			channelStat += '&id=' + item.snippet.channelId;
+		});
+		return [statId, channelStat];
+	}
+	function getVideoViews(id) {
+		fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics${id}&key=${API_key}`)
+			.then((resp) => resp.json())
+			.then((resp) => {
+				for (let i in resp.items) {
+					videoData[i].views = resp.items[i].statistics.viewCount;
+				}
+			});
+		return videoData;
+	}
+	function getChannelLogo(id) {
+		fetch(
+			`https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&${id}&key=${API_key}`,
+		)
+			.then((resp) => resp.json())
+			.then((resp) => {
+				for (let i in resp.items)
+					videoData[i].channelLogo = resp.items[i].snippet.thumbnails.default.url;
+			});
+		return videoData;
+	}
+	function renderData(arr) {
+		arr.forEach((item) => {
+			let x = new AppendVideos(item);
+			x.render();
+		});
+	}
 	class AppendVideos {
 		constructor(obj) {
 			this.author = obj.author;
@@ -99,15 +111,17 @@ document.addEventListener('DOMContentLoaded', () => {
 			const elem = document.createElement('div');
 			// if (this.parent.innerHTML != '') this.parent.innerHTML = '';
 			elem.innerHTML = `
-			<div class="mr-3 mb-3">
-				<iframe class="w-290 h-162" src="http://www.youtube.com/embed/${this.vidID}" frameborder="0" allowfullscreen></iframe>
+			<div class="mr-3 w-290 h-244">
+				<div class="relative cursor-pointer w-290 h-162 before:content-[''] before:absolute before:bg-21 before:opacity-80 before:w-68 before:h-12 before:inset-2/4 before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-xl after:content-[''] after:absolute after:inset-2/4 after:-translate-x-1/2 after:-translate-y-1/2 after:w-0 after:h-0 after:border-t-transparent after:border-t-10 after:border-b-transparent after:border-b-10 after:border-l-l18 after:border-l-white hover:before:bg-rr">
+					<img class="w-full h-full" src="https://i.ytimg.com/vi/${this.vidID}/mqdefault.jpg" alt="katy perry"/>
+				</div>
 				<div class="flex mt-2.5 w-290 h-72">
-					<img class="video_logo w-8 h-8 rounded-full" src=${this.logo} alt="${this.author}"/>
+					<img class="video_logo w-8 h-8 rounded-full" src="${this.channelLogo}" alt="${this.author}"/>
 					<div class="video-text ml-3">
 						<div class="video_title font-sans text-13 font-bold dark:text-white">${this.title}</div>
 						<div class="video_author text-xs text-72 dark:text-white">${this.author}</div>
 						<div class="vide_info flex">
-							<span class="views text-xs text-72 dark:text-white">${this.views}&nbsp;</span>
+							<span class="views text-xs text-72 dark:text-white">${this.vidID}&nbsp;</span>
 							<span class="video_date text-xs text-72 dark:text-white">•&nbsp;${this.date}</span>
 						</div>
 					</div>
