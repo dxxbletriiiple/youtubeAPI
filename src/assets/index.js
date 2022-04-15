@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const suggestion = document.querySelectorAll('.suggestions_btn');
 	const hamburger = document.querySelector('.hamburger');
 	const sideBar = document.querySelector('aside');
+	const videoBlock = document.querySelector('.video_block');
 	const container = document.querySelector('.container');
-
 	document.addEventListener('keydown', (e) => {
 		if (e.code == 'Slash') input.focus();
 	});
@@ -35,27 +35,25 @@ document.addEventListener('DOMContentLoaded', () => {
 			fetchdata = getData(item.innerHTML);
 		});
 	});
-
+	// getData('kanye');
 	const videoData = [];
+	let statId = '';
+	let channelStat = '';
 	async function getData(q) {
 		return fetch(
 			url + API_key + '&type=video&part=snippet&max_results=10&order=viewCount&q=' + q,
 		)
 			.then((res) => res.json())
 			.then((res) => pushID(res))
-			.then((statid) => {
-				getVideoViews(statid[0]);
-				getChannelLogo(statid[1]);
-			})
+			.then((stat) => getVideoViews(stat))
+			.then((ch) => getChannelLogo(ch))
 			.then((obj) => {
-				console.log(videoData);
+				console.log(obj);
 				renderData(obj);
 			});
 	}
 
 	function pushID(rs) {
-		let statId = '';
-		let channelStat = '';
 		rs.items.forEach((item) => {
 			videoData.push({
 				videoID: item.id.videoId,
@@ -68,17 +66,18 @@ document.addEventListener('DOMContentLoaded', () => {
 			statId += '&id=' + item.id.videoId;
 			channelStat += '&id=' + item.snippet.channelId;
 		});
-		return [statId, channelStat];
+		return statId;
 	}
 	function getVideoViews(id) {
 		fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics${id}&key=${API_key}`)
 			.then((resp) => resp.json())
 			.then((resp) => {
-				for (let i in resp.items) {
+				// this.bind(resp);
+				for (let i = 0; i < resp.items.length; i++) {
 					videoData[i].views = resp.items[i].statistics.viewCount;
 				}
 			});
-		return videoData;
+		return channelStat;
 	}
 	function getChannelLogo(id) {
 		fetch(
@@ -86,7 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		)
 			.then((resp) => resp.json())
 			.then((resp) => {
-				for (let i in resp.items)
+				// this.bind(resp);
+				for (let i = 0; i < resp.items.length; i++)
 					videoData[i].channelLogo = resp.items[i].snippet.thumbnails.default.url;
 			});
 		return videoData;
@@ -103,9 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.logo = obj.channelLogo;
 			this.date = obj.date;
 			this.title = obj.title;
-			this.vidID = obj.vidID;
+			this.videoID = obj.videoID;
 			this.views = obj.views;
-			this.parent = document.querySelector('.video_block');
+			this.parent = videoBlock;
 		}
 		render() {
 			const elem = document.createElement('div');
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			elem.innerHTML = `
 			<div class="mr-3 w-290 h-244">
 				<div class="relative cursor-pointer w-290 h-162 before:content-[''] before:absolute before:bg-21 before:opacity-80 before:w-68 before:h-12 before:inset-2/4 before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-xl after:content-[''] after:absolute after:inset-2/4 after:-translate-x-1/2 after:-translate-y-1/2 after:w-0 after:h-0 after:border-t-transparent after:border-t-10 after:border-b-transparent after:border-b-10 after:border-l-l18 after:border-l-white hover:before:bg-rr">
-					<img class="w-full h-full" src="https://i.ytimg.com/vi/${this.vidID}/mqdefault.jpg" alt="katy perry"/>
+					<img class="w-full h-full" src="https://i.ytimg.com/vi/${this.videoID}/mqdefault.jpg" alt="katy perry"/>
 				</div>
 				<div class="flex mt-2.5 w-290 h-72">
 					<img class="video_logo w-8 h-8 rounded-full" src="${this.channelLogo}" alt="${this.author}"/>
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 						<div class="video_title font-sans text-13 font-bold dark:text-white">${this.title}</div>
 						<div class="video_author text-xs text-72 dark:text-white">${this.author}</div>
 						<div class="vide_info flex">
-							<span class="views text-xs text-72 dark:text-white">${this.vidID}&nbsp;</span>
+							<span class="views text-xs text-72 dark:text-white">${this.views}&nbsp;</span>
 							<span class="video_date text-xs text-72 dark:text-white">•&nbsp;${this.date}</span>
 						</div>
 					</div>
