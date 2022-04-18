@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	let statId = '';
 	let channelStat = '';
 	async function getData(q) {
-		return fetch(
+		return await fetch(
 			url + API_key + '&type=video&part=snippet&max_results=10&order=viewCount&q=' + q,
 		)
 			.then((res) => res.json())
@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			.then((ch) => getChannelLogo(ch))
 			.then((obj) => {
 				console.log(obj);
+				// debugger;
 				renderData(obj);
 			});
 	}
@@ -63,37 +64,45 @@ document.addEventListener('DOMContentLoaded', () => {
 				date: new Date(item.snippet.publishedAt).toDateString(),
 				thumbnail: `https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`,
 			});
+			// debugger;
 			statId += '&id=' + item.id.videoId;
+			// debugger;
 			channelStat += '&id=' + item.snippet.channelId;
+			// debugger;
 		});
 		return statId;
 	}
-	function getVideoViews(id) {
-		fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics${id}&key=${API_key}`)
+	async function getVideoViews(id) {
+		await fetch(
+			`https://www.googleapis.com/youtube/v3/videos?part=statistics${id}&key=${API_key}`,
+		)
 			.then((resp) => resp.json())
 			.then((resp) => {
 				// this.bind(resp);
 				for (let i = 0; i < resp.items.length; i++) {
 					videoData[i].views = resp.items[i].statistics.viewCount;
+					// debugger;
 				}
 			});
 		return channelStat;
 	}
-	function getChannelLogo(id) {
-		fetch(
-			`https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&${id}&key=${API_key}`,
+	async function getChannelLogo(id) {
+		await fetch(
+			`https://youtube.googleapis.com/youtube/v3/channels?part=snippet${id}&key=${API_key}`,
 		)
 			.then((resp) => resp.json())
 			.then((resp) => {
-				// this.bind(resp);
-				for (let i = 0; i < resp.items.length; i++)
+				for (let i = 0; i < resp.items.length; i++) {
 					videoData[i].channelLogo = resp.items[i].snippet.thumbnails.default.url;
+					// debugger;
+				}
 			});
 		return videoData;
 	}
 	function renderData(arr) {
 		arr.forEach((item) => {
 			let x = new AppendVideos(item);
+			// debugger;
 			x.render();
 		});
 	}
@@ -116,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					<img class="w-full h-full" src="https://i.ytimg.com/vi/${this.videoID}/mqdefault.jpg" alt="katy perry"/>
 				</div>
 				<div class="flex mt-2.5 w-290 h-72">
-					<img class="video_logo w-8 h-8 rounded-full" src="${this.channelLogo}" alt="${this.author}"/>
+					<img class="video_logo w-8 h-8 rounded-full" src="${this.logo}" alt="${this.author}"/>
 					<div class="video-text ml-3">
 						<div class="video_title font-sans text-13 font-bold dark:text-white">${this.title}</div>
 						<div class="video_author text-xs text-72 dark:text-white">${this.author}</div>
